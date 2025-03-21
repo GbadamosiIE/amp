@@ -8,15 +8,13 @@
                 Filter by:
             </div>
             <div class='col-md-4'>
-                <input type="text" />
-
+                <input type="text" [(ngModel)]="listFilter" placeholder="Enter filter text" />
             </div>
         </div>
         <div class='row'>
-            <div class='col-md-'>
-                <h4>Filtered by: {{ListFilter}}</h4>
+            <div class='col-md-12'>
+                <h4>Filtered by: {{listFilter}}</h4> <!-- ✅ This should now update dynamically -->
             </div>
-
         </div>
     </div>
     <div class='table-responsive'>
@@ -32,15 +30,15 @@
                     <th>Code</th>
                     <th>Available</th>
                     <th>Price</th>
-                    <th>5 Star Rating</th>
+                    <th>Star Rating</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let product of Products">
+                <tr *ngFor="let product of filteredProducts">
                     <td><img *ngIf='showImage' [src]='product.imageUrl' alt="logo" [style.width.px]='imageWidth'
                             [style.margin.px]='imageMargin'></td>
                     <td>{{product.productName}}</td>
-                    <td>{{product.productCode | lowercase}}</td>
+                    <td>{{product.productCode | lowercase | convertToSpaces:'-'}}</td>
                     <td>{{product.releaseDate}}</td>
                     <td>{{product.price | currency: 'USD':'symbol':'1.2-2'}}</td>
                     <td>{{product.starRating}}</td>

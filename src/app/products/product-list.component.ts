@@ -1,18 +1,34 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NgIf, NgFor, LowerCasePipe, CurrencyPipe } from '@angular/common';
 import { IProduct } from "./product";
+import { ConvertToSpacesPipe } from "../shared/convert-to-spaces.pipe";
+import { FormsModule } from "@angular/forms";
 
 @Component({
     selector: 'pm-products',
     templateUrl: './product-list.component.html',
-    imports: [NgIf, NgFor, LowerCasePipe, CurrencyPipe]
+    imports: [NgIf, NgFor, LowerCasePipe, CurrencyPipe, ConvertToSpacesPipe, FormsModule],
+    standalone: true,
+    styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
+    ngOnInit(): void {
+        this.listFilter = 'cart';
+    }
     PageTitle = 'Product List';
     imageWidth = 50;
     imageMargin = 50;
     showImage = false;
-    ListFilter = 'cart';
+    private _listFilter = '';
+    get listFilter() {
+        return this._listFilter;
+    }
+    set listFilter(value: string) {
+        this._listFilter = value;
+        console.log('In setter:', value)
+        this.filteredProducts = this.performFilterBy(value)
+    }
+    filteredProducts: IProduct[] = [];
     Products: IProduct[] = [
         {
             "productId": 2,
@@ -37,5 +53,11 @@ export class ProductListComponent {
     ];
     toggleImage(): void {
         this.showImage = !this.showImage;
+    }
+    performFilterBy(filterBy: string): IProduct[] {
+        filterBy = filterBy.toLocaleLowerCase();
+        return this.Products.filter((product: IProduct) =>
+            product.productName.toLocaleLowerCase().includes(filterBy)
+        )
     }
 };
