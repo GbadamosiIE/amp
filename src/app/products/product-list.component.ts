@@ -3,17 +3,25 @@ import { NgIf, NgFor, LowerCasePipe, CurrencyPipe } from '@angular/common';
 import { IProduct } from "./product";
 import { ConvertToSpacesPipe } from "../shared/convert-to-spaces.pipe";
 import { FormsModule } from "@angular/forms";
+import { StarComponent } from "../shared/star.component";
+import { ProductService } from "./product.service";
 
 @Component({
     selector: 'pm-products',
     templateUrl: './product-list.component.html',
-    imports: [NgIf, NgFor, LowerCasePipe, CurrencyPipe, ConvertToSpacesPipe, FormsModule],
+    imports: [NgIf, NgFor, LowerCasePipe, CurrencyPipe, ConvertToSpacesPipe, FormsModule, StarComponent],
     standalone: true,
     styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit {
+
+    constructor(private productService: ProductService) {
+
+    }
     ngOnInit(): void {
-        this.listFilter = 'cart';
+        this.listFilter = '';
+        this.Products = this.productService.getProducts();
+        this.filteredProducts = this.Products;
     }
     PageTitle = 'Product List';
     imageWidth = 50;
@@ -25,32 +33,10 @@ export class ProductListComponent implements OnInit {
     }
     set listFilter(value: string) {
         this._listFilter = value;
-        console.log('In setter:', value)
         this.filteredProducts = this.performFilterBy(value)
     }
     filteredProducts: IProduct[] = [];
-    Products: IProduct[] = [
-        {
-            "productId": 2,
-            "productName": "Garden Cart",
-            "productCode": "GDN-0023",
-            "releaseDate": "March 18, 2021",
-            "description": "15 gallon capacity rolling garden cart",
-            "price": 32.99,
-            "starRating": 4.2,
-            "imageUrl": "assets/images/garden_cart.jpg"
-        },
-        {
-            "productId": 5,
-            "productName": "Hammer",
-            "productCode": "TBX-0048",
-            "releaseDate": "May 21, 2021",
-            "description": "Curved claw steel hammer",
-            "price": 8.9,
-            "starRating": 4.8,
-            "imageUrl": "assets/images/hammer.jpg"
-        }
-    ];
+    Products: IProduct[] = [];
     toggleImage(): void {
         this.showImage = !this.showImage;
     }
@@ -59,5 +45,8 @@ export class ProductListComponent implements OnInit {
         return this.Products.filter((product: IProduct) =>
             product.productName.toLocaleLowerCase().includes(filterBy)
         )
+    }
+    onRatingClicked(message: string): void {
+        this.PageTitle = 'Product List: ' + message;
     }
 };
